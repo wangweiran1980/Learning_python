@@ -1,103 +1,134 @@
-"""
-Created on Mon Jan  3 15:17:43 2022.
+"""user v2."""
 
-@author: wangweiran
-"""
-
-users = {}
+import json
 
 
-def isInclude(data: list, txt: str, precise: bool = True) -> bool:
-    """在列表中查询是否包含给定的文本."""
-    if precise:
-        if txt in data:
-            return True
-    else:
-        for item in data:
-            if txt in item:
-                return True
-    return False
+def isInclude(data: dict, txt: str, isPrecise: bool = True) -> bool:
+    """在列表中查询是否包含给定的文本.
+
+    isPrecise: 是否精确匹配
+    """
+    if isPrecise:
+        return True if txt == data['name'] else False
+    return True if txt in data['name'] else False
 
 
-def getID() -> int:
+def getID(data: dict) -> int:
     """在添加用户信息时指定ID."""
-    if users == {}:
+    if data == {}:
         return 1
-    return list(users.keys())[-1] + 1
+    return int(list(data.keys())[-1]) + 1
 
 
-def add():
+def add(txt: str, data: dict) -> None:
     """添加用户信息."""
-    txt = input("请输入用户信息(name, age, tel): ")
     nodes = txt.split(",")
     if len(nodes) != 3:
         print("输入信息错误")
-    for user in users.values():
+    for user in data.values():
         if isInclude(user, nodes[0].strip()):
             print('名字已存在!')
             return
-    id = getID()
-    users[id] = [nodes[0].strip(), nodes[1].strip(), nodes[2].strip()]
+    id = getID(data)
+    data[id] = {
+        'name': nodes[0].strip(),
+        'age': nodes[1].strip(),
+        'tel': nodes[2].strip()
+    }
 
 
-def delete():
+def delete(name: str, data: dict) -> bool:
     """删除用户信息."""
-    name = input("请输入名字: ")
-    for id in users:
-        if isInclude(users[id], name):
-            users.pop(id)
-            return
-    print("名字不存在!")
+    for id in data:
+        if isInclude(data[id], name):
+            data.pop(id)
+            return True
+    return False
 
 
-def show():
+def show(data: dict) -> None:
     """展示用户数据."""
-    for user in users:
+    for id, user in data.items():
         print("{id} {name} {age} {tel}".format(
-            id=user,
-            name=users[user][0],
-            age=users[user][1],
-            tel=users[user][2],
+            id=id,
+            name=user['name'],
+            age=user['age'],
+            tel=user['tel'],
         ))
 
 
-def edit():
+def edit(id: str, data: dict) -> bool:
     """编辑已存在用户信息."""
-    id = int(input("请输入ID: "))
-    if id not in users:
-        print('ID不存在!')
-        return
+    if id not in data:
+        return False
     txt = input("请输入用户信息(name, age, tel): ")
     nodes = txt.split(",")
     if len(nodes) != 3:
         print("输入信息错误")
-        return
-    users[id] = [nodes[0].strip(), nodes[1].strip(), nodes[2].strip()]
+        return False
+    data[id] = {
+        'name': nodes[0].strip(),
+        'age': nodes[1].strip(),
+        'tel': nodes[2].strip()
+    }
+    return True
 
 
-def find():
+def find(txt: str, data: dict) -> None:
     """查找用户信息."""
-    txt = input("请输入要查询的内容: ").strip()
-    for user in users.values():
-        if isInclude(user, txt, False):
-            print("{name} {age} {tel}".format(name=user[0],
-                                              age=user[1],
-                                              tel=user[2]))
+    for id, user in data.items():
+        if not isInclude(user, txt, False):
+            print('未找到符合数据')
             return
-    print('未找到符合数据')
+    print("{id} {name} {age} {tel}".format(
+        id=id,
+        name=user['name'],
+        age=user['age'],
+        tel=user['tel'],
+    ))
 
 
-while True:
-    op = input("请选择操作(add, del, edit, list, find, quit): ").strip()
-    if op == "quit":
-        break
-    elif op == "add":
-        add()
-    elif op == "del":
-        delete()
-    elif op == "list":
-        show()
-    elif op == "edit":
-        edit()
-    elif op == "find":
-        find()
+def read(fn: str) -> dict:
+    """从文件中读取json数据."""
+    try:
+        with open(fn, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError):
+        return {}
+
+
+def save(data: dict, fn: str) -> bool:
+    """保存json数据到文件."""
+    try:
+        with open(fn, 'w') as f:
+            json.dump(data, f)
+    except (json.JSONDecodeError) as err:
+        print(err)
+        return False
+    return True
+
+
+if __name__ == '__main__':
+    filename = "./userinfo.json"
+    users = read(filename)
+    while True:
+        op = input("请选择操作(add, del, edit, list, find, quit): ").strip()
+        if op == "quit":
+            if save(users, filename):
+                exit(0)
+            print('系统故障!')
+            exit(0)
+        elif op == "add":
+            txt = input("请输入用户信息(name, age, tel): ")
+            add(txt, users)
+        elif op == "del":
+            name = input("请输入名字: ")
+            delete(name, users)
+        elif op == "list":
+            show(users)
+        elif op == "edit":
+            id = input("请输入ID: ")
+            edit(id, users)
+        elif op == "find":
+            txt = input("请输入要查询的内容: ").strip()
+            find(txt, users)

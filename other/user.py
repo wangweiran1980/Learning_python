@@ -1,9 +1,4 @@
-"""
-Created on Mon Jan  3 15:17:43 2022.
-
-@author: wangweiran
-"""
-
+"""user v1."""
 
 users = []
 
@@ -17,7 +12,7 @@ while True:
         if len(nodes) != 3:
             print('输入信息错误')
             continue
-        id = len(users)+1
+        id = len(users) + 1
         user = [id, nodes[0].strip(), nodes[1].strip(), nodes[2].strip()]
         users.append(user)
         print(users)
