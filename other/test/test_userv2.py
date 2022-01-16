@@ -1,4 +1,4 @@
-"""user测试代码."""
+"""userv2测试代码."""
 
 from other.userv2 import add, delete, getID, isInclude, read
 
