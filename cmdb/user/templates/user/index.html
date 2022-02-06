@@ -9,8 +9,6 @@
 </head>
 
 <body>
-    <h1>第一个模板</h1>
-    <h1>当前时间: {{ current_time }} </h1>
     <table>
         <thead>
             <th>ID</th>
@@ -24,7 +22,13 @@
             <tr>
                 <td> {{ user.0 }} </td>
                 <td> {{ user.1.name }} </td>
-                <td> {{ user.1.gender }} </td>
+                <td>
+                    {% if user.1.gender == 1 %}
+                    男
+                    {% else %}
+                    女
+                    {%endif%}
+                </td>
                 <td> {{ user.1.age }} </td>
                 <td> {{ user.1.tel }} </td>
             </tr>
