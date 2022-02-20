@@ -2,39 +2,159 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CMDB | 用户管理</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/user/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/static/user/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="/static/user/css/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="/static/user/css/green.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="/static/user/css/custom.min.css" rel="stylesheet">
+    <link href="/static/user/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="/static/user/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="/static/user/css/sweetalert.css" rel="stylesheet">
 </head>
 
-<body>
-    <table>
-        <thead>
-            <th>ID</th>
-            <th>name</th>
-            <th>gender</th>
-            <th>age</th>
-            <th>tel</th>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td> {{ user.0 }} </td>
-                <td> {{ user.1.name }} </td>
-                <td>
-                    {% if user.1.gender == 1 %}
-                    男
-                    {% else %}
-                    女
-                    {%endif%}
-                </td>
-                <td> {{ user.1.age }} </td>
-                <td> {{ user.1.tel }} </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <div class="nav toggle">
+                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                    </div>
+                    <nav class="nav navbar-nav">
+                        <ul class=" navbar-right">
+                            <li class="nav-item dropdown open" style="padding-left: 15px;">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true"
+                                    id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
+                                    {{ request.session.username }}
+                                </a>
+                                <div class="dropdown-menu dropdown-usermenu pull-right"
+                                    aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{% url 'user:logout' %}"><i
+                                            class="fa fa-sign-out pull-right"></i>
+                                        Log Out</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5   form-group pull-right top_search">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="display: block;">
+
+
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>用户管理</h2> <br>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <h2><a class="btn btn-primary btn-round" href="{% url 'user:create' %}">创建用户</a></h2>
+                                <div class="x_content">
+
+                                    <table id="user_table" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>姓名</th>
+                                                <th>性别</th>
+                                                <th>年龄</th>
+                                                <th>联系方式</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for user in users %}
+                                            <tr>
+                                                <th scope="row"> {{ user.id }} </th>
+                                                <td> {{ user.username }} </td>
+                                                <td>
+                                                    {% if user.gender == 1 %}
+                                                    男
+                                                    {% else %}
+                                                    女
+                                                    {%endif%}
+                                                </td>
+                                                <td> {{ user.age }} </td>
+                                                <td> {{ user.tel }} </td>
+                                                <td>
+                                                    {% if user.username == request.session.username %}
+                                                    <a class="btn btn-warning btn-round btn-sm"
+                                                        href="{% url 'user:edit_user' %}?uid={{ user.id }}">
+                                                        编辑
+                                                    </a>
+                                                    {% else %}
+                                                    <a class="btn btn-danger btn-round btn-sm"
+                                                        href="{% url 'user:del_user' %}?uid={{ user.id}}">
+                                                        删除
+                                                    </a>
+                                                    {%endif%}
+                                                </td>
+
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/static/user/js/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="/static/user/js/bootstrap.bundle.min.js"></script>
+    <!-- FastClick -->
+    <script src="/static/user/js/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="/static/user/js/nprogress.js"></script>
+    <!-- iCheck -->
+    <script src="/static/user/js/icheck.min.js"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="/static/user/js/custom.min.js"></script>
+    <!-- 表格 -->
+    <script type="text/javascript" src="/static/user/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/user/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/static/user/js/sweetablert.min.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('#user_table').DataTable();
+        });
+    </script>
 </body>
 
 </html>
